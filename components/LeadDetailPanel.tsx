@@ -70,9 +70,9 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
 
   const ConfidenceBadge = ({ level }: { level: string }) => {
     const colors = {
-      High: 'bg-green-100 text-green-800',
-      Medium: 'bg-yellow-100 text-yellow-800',
-      Low: 'bg-red-100 text-red-800',
+      High: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+      Medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+      Low: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
     };
     return (
       <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors[level as keyof typeof colors]}`}>
@@ -84,9 +84,9 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
   const EmailStatusBadge = ({ status }: { status?: EmailStatus }) => {
     if (!status) return null;
     const config = {
-      Validated: { color: 'text-green-600 bg-green-50 border-green-200', icon: ShieldCheck, label: 'Validated' },
-      Guessed: { color: 'text-amber-600 bg-amber-50 border-amber-200', icon: HelpCircle, label: 'Guessed Pattern' },
-      Tested: { color: 'text-blue-600 bg-blue-50 border-blue-200', icon: Check, label: 'Manually Tested' },
+      Validated: { color: 'text-green-600 bg-green-50 border-green-200 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400', icon: ShieldCheck, label: 'Validated' },
+      Guessed: { color: 'text-amber-600 bg-amber-50 border-amber-200 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-400', icon: HelpCircle, label: 'Guessed Pattern' },
+      Tested: { color: 'text-blue-600 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-400', icon: Check, label: 'Manually Tested' },
     };
     const c = config[status];
     const Icon = c.icon;
@@ -101,20 +101,20 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
   return (
     <div className="fixed inset-0 z-50 overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-slate-900/50 transition-opacity" onClick={onClose} />
+        <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm transition-opacity" onClick={onClose} />
         <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
           <div className="pointer-events-auto w-screen max-w-md">
-            <div className="flex h-full flex-col overflow-y-scroll bg-white shadow-xl">
-              <div className="bg-slate-50 px-4 py-6 sm:px-6 border-b border-slate-200">
+            <div className="flex h-full flex-col overflow-y-scroll bg-white dark:bg-slate-800 shadow-xl border-l border-slate-200 dark:border-slate-700">
+              <div className="bg-slate-50 dark:bg-slate-900 px-4 py-6 sm:px-6 border-b border-slate-200 dark:border-slate-700">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900">{formData.name}</h2>
-                    <p className="text-sm text-slate-500 mt-1">{formData.category} • {formData.address}</p>
+                    <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{formData.name}</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{formData.category} • {formData.address}</p>
                   </div>
                   <div className="ml-3 flex h-7 items-center">
                     <button
                       type="button"
-                      className="rounded-md bg-transparent text-slate-400 hover:text-slate-500 focus:outline-none"
+                      className="rounded-md bg-transparent text-slate-400 hover:text-slate-500 dark:hover:text-slate-200 focus:outline-none"
                       onClick={onClose}
                     >
                       <X size={24} />
@@ -126,7 +126,7 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                      <select 
                        value={formData.status} 
                        onChange={(e) => handleChange('status', e.target.value)}
-                       className="text-sm border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white text-slate-900"
+                       className="text-sm border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                      >
                        <option value="New">New</option>
                        <option value="Reviewed">Reviewed</option>
@@ -137,24 +137,24 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                    </div>
                    
                    {/* Lead Score Indicator */}
-                   <div className="flex items-center space-x-2 bg-white px-2 py-1 rounded border border-slate-200 shadow-sm">
-                      <Trophy size={14} className={formData.leadScore && formData.leadScore > 75 ? "text-yellow-500" : "text-slate-400"} />
-                      <span className="text-sm font-bold text-slate-700">{formData.leadScore || 0}</span>
-                      <span className="text-[10px] text-slate-400 uppercase">Score</span>
+                   <div className="flex items-center space-x-2 bg-white dark:bg-slate-700 px-2 py-1 rounded border border-slate-200 dark:border-slate-600 shadow-sm">
+                      <Trophy size={14} className={formData.leadScore && formData.leadScore > 75 ? "text-yellow-500" : "text-slate-400 dark:text-slate-500"} />
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{formData.leadScore || 0}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase">Score</span>
                    </div>
                 </div>
 
                 {/* Tabs */}
-                <div className="flex mt-6 border-b border-slate-200 space-x-6">
+                <div className="flex mt-6 border-b border-slate-200 dark:border-slate-700 space-x-6">
                     <button 
                         onClick={() => setActiveTab('details')}
-                        className={`pb-2 text-sm font-medium ${activeTab === 'details' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`pb-2 text-sm font-medium ${activeTab === 'details' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         Lead Details
                     </button>
                     <button 
                         onClick={() => setActiveTab('legal')}
-                        className={`pb-2 text-sm font-medium flex items-center ${activeTab === 'legal' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`pb-2 text-sm font-medium flex items-center ${activeTab === 'legal' ? 'text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
                     >
                         <Scale size={14} className="mr-1"/> Legal & Finance
                     </button>
@@ -167,17 +167,17 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                     
                     {/* Company Info */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium text-slate-900 border-b pb-2">Company Details</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Company Details</h3>
                       
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-slate-500 uppercase flex items-center">
+                        <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center">
                           <FileText size={14} className="mr-1" /> Description
                         </label>
                         <textarea
                             rows={2}
                             value={formData.companyDescription || ''}
                             onChange={(e) => handleChange('companyDescription', e.target.value)}
-                            className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-slate-900"
+                            className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                             placeholder="Short description of the company..."
                         />
                       </div>
@@ -185,10 +185,10 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
 
                     {/* Contact Info */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium text-slate-900 border-b pb-2">Contact Information</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Contact Information</h3>
                       
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-slate-500 uppercase flex items-center">
+                        <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center">
                           <Globe size={14} className="mr-1" /> Website
                         </label>
                         <div className="flex space-x-2">
@@ -196,11 +196,11 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                             type="text" 
                             value={formData.website || ''} 
                             onChange={(e) => handleChange('website', e.target.value)}
-                            className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-slate-900"
+                            className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                           />
                           {formData.website && (
-                            <a href={formData.website} target="_blank" rel="noreferrer" className="flex items-center justify-center px-3 border border-slate-300 rounded hover:bg-slate-50">
-                              <Globe size={16} className="text-slate-600" />
+                            <a href={formData.website} target="_blank" rel="noreferrer" className="flex items-center justify-center px-3 border border-slate-300 dark:border-slate-600 rounded hover:bg-slate-50 dark:hover:bg-slate-600">
+                              <Globe size={16} className="text-slate-600 dark:text-slate-300" />
                             </a>
                           )}
                         </div>
@@ -208,7 +208,7 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
 
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                            <label className="text-xs font-medium text-slate-500 uppercase flex items-center">
+                            <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center">
                             <Mail size={14} className="mr-1" /> Email Address
                             </label>
                             <EmailStatusBadge status={formData.emailStatus} />
@@ -218,18 +218,18 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                             type="email" 
                             value={formData.email || ''} 
                             onChange={(e) => handleChange('email', e.target.value)}
-                            className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-slate-900"
+                            className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                             placeholder="No email found"
                             />
                             {formData.email && (
-                                <a href={`mailto:${formData.email}`} className="flex items-center justify-center px-3 border border-slate-300 rounded hover:bg-slate-50 text-blue-600">
+                                <a href={`mailto:${formData.email}`} className="flex items-center justify-center px-3 border border-slate-300 dark:border-slate-600 rounded hover:bg-slate-50 dark:hover:bg-slate-600 text-blue-600 dark:text-blue-400">
                                     <Mail size={16} />
                                 </a>
                             )}
                             <select
                                 value={formData.emailStatus || ''}
                                 onChange={(e) => handleChange('emailStatus', e.target.value || undefined)}
-                                className="text-xs border-slate-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 w-24 bg-white text-slate-900"
+                                className="text-xs border-slate-300 dark:border-slate-600 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 w-24 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                             >
                                 <option value="">Status...</option>
                                 <option value="Validated">Validated</option>
@@ -240,7 +240,7 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-slate-500 uppercase flex items-center">
+                        <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center">
                           <Phone size={14} className="mr-1" /> Phone Number
                         </label>
                         <div className="flex space-x-2">
@@ -248,7 +248,7 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                             type="text" 
                             value={formData.phone || ''} 
                             onChange={(e) => handleChange('phone', e.target.value)}
-                            className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-slate-900"
+                            className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                           />
                           {formData.phone && onStartCall && (
                             <Button 
@@ -266,16 +266,16 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
 
                     {/* Decision Maker */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium text-slate-900 border-b pb-2">Decision Maker</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Decision Maker</h3>
                       <div className="space-y-2">
-                        <label className="text-xs font-medium text-slate-500 uppercase flex items-center">
+                        <label className="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase flex items-center">
                           <User size={14} className="mr-1" /> CEO / Owner
                         </label>
                         <input 
                           type="text" 
                           value={formData.ceo || ''} 
                           onChange={(e) => handleChange('ceo', e.target.value)}
-                          className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-slate-900"
+                          className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                           placeholder="Name not found"
                         />
                       </div>
@@ -283,24 +283,24 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
 
                     {/* Call History */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium text-slate-900 border-b pb-2 flex items-center">
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2 flex items-center">
                         <History size={16} className="mr-2" />
                         Call History
                       </h3>
                       {(!formData.callLogs || formData.callLogs.length === 0) ? (
-                        <div className="text-center py-4 bg-slate-50 rounded-lg border border-slate-200 border-dashed">
+                        <div className="text-center py-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-700 border-dashed">
                           <p className="text-xs text-slate-400 italic">No calls recorded yet.</p>
                         </div>
                       ) : (
                         <div className="space-y-3">
                           {formData.callLogs.slice().reverse().map((log) => (
-                            <div key={log.id} className="bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                            <div key={log.id} className="bg-white dark:bg-slate-700 p-3 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm">
                               <div className="flex justify-between items-start mb-2">
                                 <div className="flex items-center space-x-2">
                                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                                        log.outcome.includes('Appointment') ? 'bg-green-100 text-green-700' :
-                                        log.outcome.includes('No Answer') ? 'bg-red-100 text-red-700' :
-                                        'bg-blue-100 text-blue-700'
+                                        log.outcome.includes('Appointment') ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' :
+                                        log.outcome.includes('No Answer') ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' :
+                                        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
                                     }`}>
                                     {log.outcome}
                                     </span>
@@ -317,20 +317,20 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                               </div>
                               
                               {log.analysis && (
-                                  <div className="mb-2 p-2 bg-slate-50 rounded border border-slate-100 flex justify-between items-center text-xs">
+                                  <div className="mb-2 p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-100 dark:border-slate-600 flex justify-between items-center text-xs">
                                       <div>
                                           <span className="text-slate-400 mr-1">Score:</span>
-                                          <span className="font-bold text-slate-700">{log.analysis.callScore}/100</span>
+                                          <span className="font-bold text-slate-700 dark:text-slate-200">{log.analysis.callScore}/100</span>
                                       </div>
                                       <div>
                                           <span className="text-slate-400 mr-1">Adherence:</span>
-                                          <span className="font-bold text-slate-700">{log.analysis.scriptAdherence}%</span>
+                                          <span className="font-bold text-slate-700 dark:text-slate-200">{log.analysis.scriptAdherence}%</span>
                                       </div>
                                       <div>
                                           <span className="text-slate-400 mr-1">Sentiment:</span>
                                           <span className={`font-bold ${
-                                              log.analysis.sentiment === 'Positive' ? 'text-green-600' : 
-                                              log.analysis.sentiment === 'Negative' ? 'text-red-600' : 'text-slate-600'
+                                              log.analysis.sentiment === 'Positive' ? 'text-green-600 dark:text-green-400' : 
+                                              log.analysis.sentiment === 'Negative' ? 'text-red-600 dark:text-red-400' : 'text-slate-600 dark:text-slate-400'
                                           }`}>
                                               {log.analysis.sentiment}
                                           </span>
@@ -338,7 +338,7 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                                   </div>
                               )}
 
-                              {log.notes && <p className="text-xs text-slate-600 mt-1">{log.notes}</p>}
+                              {log.notes && <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">{log.notes}</p>}
                             </div>
                           ))}
                         </div>
@@ -347,19 +347,19 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
 
                     {/* Notes */}
                     <div className="space-y-4">
-                      <h3 className="text-sm font-medium text-slate-900 border-b pb-2">Notes & Tags</h3>
+                      <h3 className="text-sm font-medium text-slate-900 dark:text-white border-b border-slate-100 dark:border-slate-700 pb-2">Notes & Tags</h3>
                       <textarea
                         rows={4}
                         value={formData.notes || ''}
                         onChange={(e) => handleChange('notes', e.target.value)}
-                        className="block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white text-slate-900"
+                        className="block w-full rounded-md border-slate-300 dark:border-slate-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border p-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                         placeholder="Add custom notes here..."
                       />
                     </div>
 
                     {/* Source Metadata */}
-                    <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                        <h4 className="text-xs font-bold text-slate-500 mb-2">Metadata</h4>
+                    <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2">Metadata</h4>
                         <p className="text-xs text-slate-400 truncate">Source: {formData.sourceUrl || 'Google Maps'}</p>
                         <p className="text-xs text-slate-400">Rating: {formData.rating} stars ({formData.reviewCount} reviews)</p>
                     </div>
@@ -372,10 +372,10 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                   <div className="relative flex-1 py-6 px-4 sm:px-6 space-y-6">
                       
                       {!formData.commercialData ? (
-                          <div className="text-center py-10 bg-slate-50 rounded-lg border border-slate-200 border-dashed">
-                              <Scale size={48} className="mx-auto mb-4 text-slate-300" />
-                              <h3 className="text-sm font-medium text-slate-900">No Commercial Data</h3>
-                              <p className="text-xs text-slate-500 mt-1 mb-6 px-6">
+                          <div className="text-center py-10 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-700 border-dashed">
+                              <Scale size={48} className="mx-auto mb-4 text-slate-300 dark:text-slate-500" />
+                              <h3 className="text-sm font-medium text-slate-900 dark:text-white">No Commercial Data</h3>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 mb-6 px-6">
                                   Fetch official data from the Commercial Register (Handelsregister) to see annual income, founding date, and owners.
                               </p>
                               <Button 
@@ -389,7 +389,7 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                           </div>
                       ) : (
                           <div className="space-y-6 animate-in fade-in duration-300">
-                              <div className="bg-slate-900 text-white rounded-lg p-4 shadow-lg relative overflow-hidden">
+                              <div className="bg-slate-900 dark:bg-slate-950 text-white rounded-lg p-4 shadow-lg relative overflow-hidden">
                                   <div className="relative z-10">
                                       <h3 className="text-lg font-serif font-bold tracking-wide mb-1 flex items-center">
                                           <Building2 size={18} className="mr-2 text-slate-300"/>
@@ -411,43 +411,43 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                               </div>
                               
                               <div className="space-y-4">
-                                  <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center border-b pb-2">
+                                  <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase flex items-center border-b border-slate-200 dark:border-slate-700 pb-2">
                                       <Banknote size={14} className="mr-1"/> Financial & Structure
                                   </h4>
                                   
                                   <div className="grid grid-cols-2 gap-4">
-                                      <div className="bg-slate-50 p-3 rounded border border-slate-100">
+                                      <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded border border-slate-100 dark:border-slate-700">
                                           <span className="text-xs text-slate-400 block mb-1">Share Capital</span>
-                                          <span className="text-sm font-medium text-slate-800">{formData.commercialData.shareCapital || 'N/A'}</span>
+                                          <span className="text-sm font-medium text-slate-800 dark:text-white">{formData.commercialData.shareCapital || 'N/A'}</span>
                                       </div>
-                                      <div className="bg-slate-50 p-3 rounded border border-slate-100">
+                                      <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded border border-slate-100 dark:border-slate-700">
                                           <span className="text-xs text-slate-400 block mb-1">Annual Revenue</span>
-                                          <span className="text-sm font-medium text-slate-800">{formData.commercialData.latestRevenue || 'Not Disclosed'}</span>
+                                          <span className="text-sm font-medium text-slate-800 dark:text-white">{formData.commercialData.latestRevenue || 'Not Disclosed'}</span>
                                       </div>
-                                      <div className="bg-slate-50 p-3 rounded border border-slate-100">
+                                      <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded border border-slate-100 dark:border-slate-700">
                                           <span className="text-xs text-slate-400 block mb-1">Founding Date</span>
-                                          <span className="text-sm font-medium text-slate-800">{formData.commercialData.foundingDate || 'N/A'}</span>
+                                          <span className="text-sm font-medium text-slate-800 dark:text-white">{formData.commercialData.foundingDate || 'N/A'}</span>
                                       </div>
-                                      <div className="bg-slate-50 p-3 rounded border border-slate-100">
+                                      <div className="bg-slate-50 dark:bg-slate-700/50 p-3 rounded border border-slate-100 dark:border-slate-700">
                                           <span className="text-xs text-slate-400 block mb-1">Court</span>
-                                          <span className="text-sm font-medium text-slate-800 text-xs">{formData.commercialData.court || 'N/A'}</span>
+                                          <span className="text-sm font-medium text-slate-800 dark:text-white text-xs">{formData.commercialData.court || 'N/A'}</span>
                                       </div>
                                   </div>
                               </div>
 
                               <div className="space-y-4">
-                                  <h4 className="text-xs font-bold text-slate-500 uppercase flex items-center border-b pb-2">
+                                  <h4 className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase flex items-center border-b border-slate-200 dark:border-slate-700 pb-2">
                                       <User size={14} className="mr-1"/> Managing Directors (Owners)
                                   </h4>
                                   
                                   {formData.commercialData.managingDirectors && formData.commercialData.managingDirectors.length > 0 ? (
                                       <ul className="space-y-2">
                                           {formData.commercialData.managingDirectors.map((director, idx) => (
-                                              <li key={idx} className="flex items-center bg-white border border-slate-200 p-2 rounded shadow-sm">
-                                                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-xs mr-3">
+                                              <li key={idx} className="flex items-center bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 p-2 rounded shadow-sm">
+                                                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-xs mr-3">
                                                       {director.charAt(0)}
                                                   </div>
-                                                  <span className="text-sm text-slate-800 font-medium">{director}</span>
+                                                  <span className="text-sm text-slate-800 dark:text-white font-medium">{director}</span>
                                               </li>
                                           ))}
                                       </ul>
@@ -490,8 +490,8 @@ export const LeadDetailPanel: React.FC<LeadDetailPanelProps> = ({ lead, onClose,
                   </div>
               )}
 
-              <div className="flex shrink-0 justify-end px-4 py-4 bg-slate-50 border-t border-slate-200">
-                <Button variant="secondary" onClick={onClose} className="mr-3">Cancel</Button>
+              <div className="flex shrink-0 justify-end px-4 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
+                <Button variant="secondary" onClick={onClose} className="mr-3 bg-white dark:bg-slate-700 text-slate-700 dark:text-white border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600">Cancel</Button>
                 <Button variant="primary" onClick={handleSave}>Save Changes</Button>
               </div>
             </div>

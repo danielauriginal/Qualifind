@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Script } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { Edit, Trash2, Plus, Sparkles, Save, X, FileText, Copy, Check, Eye, EyeOff, Bold, Italic, Highlighter, Eraser } from 'lucide-react';
+import { Edit, Trash2, Plus, Sparkles, Save, X, FileText, Copy, Check, Eye, EyeOff, Bold, Italic, Highlighter, Eraser, Search, Replace } from 'lucide-react';
 import { Button } from './Button';
 import { generateColdCallScript } from '../services/geminiService';
 
@@ -25,19 +25,19 @@ const PREVIEW_DATA: Record<string, string> = {
 };
 
 const THEMES = {
-  slate: 'bg-slate-50 border-slate-200',
-  blue: 'bg-blue-50 border-blue-200',
-  green: 'bg-green-50 border-green-200',
-  purple: 'bg-purple-50 border-purple-200',
-  amber: 'bg-amber-50 border-amber-200',
+  slate: 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700',
+  blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+  green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
+  purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-200 dark:border-purple-800',
+  amber: 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800',
 };
 
 const HEADER_THEMES = {
-  slate: 'bg-white border-b border-slate-100',
-  blue: 'bg-blue-100 border-b border-blue-200 text-blue-900',
-  green: 'bg-green-100 border-b border-green-200 text-green-900',
-  purple: 'bg-purple-100 border-b border-purple-200 text-purple-900',
-  amber: 'bg-amber-100 border-b border-amber-200 text-amber-900',
+  slate: 'bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700',
+  blue: 'bg-blue-100 dark:bg-blue-900/50 border-b border-blue-200 dark:border-blue-800 text-blue-900 dark:text-blue-100',
+  green: 'bg-green-100 dark:bg-green-900/50 border-b border-green-200 dark:border-green-800 text-green-900 dark:text-green-100',
+  purple: 'bg-purple-100 dark:bg-purple-900/50 border-b border-purple-200 dark:border-purple-800 text-purple-900 dark:text-purple-100',
+  amber: 'bg-amber-100 dark:bg-amber-900/50 border-b border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-100',
 };
 
 const PILL_CLASS = "inline-block bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded border border-amber-200 text-xs font-bold mx-0.5 select-none align-middle";
@@ -51,6 +51,11 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<Record<string, boolean>>({});
 
+  // Find & Replace State
+  const [showFindReplace, setShowFindReplace] = useState(false);
+  const [findText, setFindText] = useState('');
+  const [replaceText, setReplaceText] = useState('');
+
   const editorRef = useRef<HTMLDivElement>(null);
 
   // Focus editor when entering edit mode
@@ -63,6 +68,7 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
   const handleEdit = (script: Script) => {
     setEditingId(script.id);
     setEditForm({ ...script });
+    setShowFindReplace(false);
   };
 
   const handleCreateNew = () => {
@@ -86,12 +92,14 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
       onUpdateScript({ ...editForm, content } as Script);
       setEditingId(null);
       setEditForm({});
+      setShowFindReplace(false);
     }
   };
 
   const handleCancel = () => {
     setEditingId(null);
     setEditForm({});
+    setShowFindReplace(false);
   };
 
   // Editor Commands
@@ -99,7 +107,7 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
     document.execCommand(command, false, value);
     if (editorRef.current) {
         editorRef.current.focus();
-        setEditForm(prev => ({ ...prev, content: editorRef.current?.innerHTML || '' }));
+        // We do NOT update state here to avoid re-rendering and cursor jumping
     }
   };
 
@@ -119,8 +127,6 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
         // Fallback append
         editor.innerHTML += pillHtml;
     }
-    
-    setEditForm(prev => ({ ...prev, content: editor.innerHTML }));
   };
 
   const formatVariablesInHtml = (text: string) => {
@@ -169,32 +175,47 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
       setPreviewMode(prev => ({ ...prev, [id]: !prev[id] }));
   };
 
-  /**
-   * Interpolates the HTML string with preview data.
-   * Since variables are in spans: <span ...>{{leadName}}</span>
-   * We need to replace the inner text of these spans or the whole span.
-   * To keep the "pill" look in preview, we just replace the inner text {{leadName}} with the value.
-   */
   const renderPreview = (htmlContent: string) => {
       let previewHtml = htmlContent;
       Object.entries(PREVIEW_DATA).forEach(([key, value]) => {
-          // Replace {{key}} with value globally
-          // This works even inside the span
           const regex = new RegExp(`{{${key}}}`, 'g');
           previewHtml = previewHtml.replace(regex, value);
       });
       return previewHtml;
   };
 
+  // Find & Replace Logic
+  const handleFindReplace = () => {
+    if (!editorRef.current || !findText) return;
+
+    const currentHtml = editorRef.current.innerHTML;
+    // Regex that ignores HTML tags. 
+    // This looks for the findText NOT inside <> or inside the specific span class of pills
+    // Simplified robust approach: regex that matches content outside tags
+    
+    try {
+       const escapeRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+       const regex = new RegExp(`(${escapeRegExp(findText)})(?![^<]*>|[^<>]*<\/span>)`, 'g');
+       
+       const newHtml = currentHtml.replace(regex, replaceText);
+       editorRef.current.innerHTML = newHtml;
+       
+       // Force update form state just in case we save immediately
+       setEditForm(prev => ({ ...prev, content: newHtml }));
+    } catch (e) {
+       console.error("Replace failed", e);
+    }
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
         <div>
-           <h2 className="text-2xl font-bold text-slate-800">Sales Scripts</h2>
-           <p className="text-slate-500">Manage rich-text templates. Use smart variables for dynamic calls.</p>
+           <h2 className="text-2xl font-bold text-slate-800 dark:text-white">Sales Scripts</h2>
+           <p className="text-slate-500 dark:text-slate-400">Manage rich-text templates. Use smart variables for dynamic calls.</p>
         </div>
         <div className="flex space-x-3">
-            <Button variant="secondary" onClick={() => setShowAiModal(true)} className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100">
+            <Button variant="secondary" onClick={() => setShowAiModal(true)} className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800 dark:hover:bg-purple-900/50">
                 <Sparkles size={16} className="mr-2" /> AI Assistant
             </Button>
             <Button onClick={handleCreateNew}>
@@ -205,17 +226,17 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
 
       {/* AI Modal */}
       {showAiModal && (
-         <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 animate-in zoom-in duration-200">
+         <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-lg w-full p-6 animate-in zoom-in duration-200 border border-slate-200 dark:border-slate-700">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold text-slate-800 flex items-center"><Sparkles size={18} className="mr-2 text-purple-600"/> Generate Script with AI</h3>
+                    <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center"><Sparkles size={18} className="mr-2 text-purple-600"/> Generate Script with AI</h3>
                     <button onClick={() => setShowAiModal(false)}><X size={20} className="text-slate-400"/></button>
                 </div>
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">What is the goal of this call?</label>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">What is the goal of this call?</label>
                         <textarea 
-                            className="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white text-slate-900"
+                            className="w-full border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                             rows={3}
                             placeholder="e.g. Sell SEO services to dentists, get a 15 min demo meeting."
                             value={aiPrompt.goal}
@@ -223,9 +244,9 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-1">Desired Tone</label>
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Desired Tone</label>
                         <select 
-                            className="w-full border border-slate-300 rounded-lg p-2 text-sm bg-white text-slate-900"
+                            className="w-full border border-slate-300 dark:border-slate-600 rounded-lg p-2 text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                             value={aiPrompt.tone}
                             onChange={e => setAiPrompt({...aiPrompt, tone: e.target.value})}
                         >
@@ -247,7 +268,7 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
         {scripts.map(script => {
           const theme = script.themeColor || 'slate';
           return (
-            <div key={script.id} className={`rounded-xl border shadow-sm transition-all overflow-hidden flex flex-col ${editingId === script.id ? 'border-blue-500 ring-1 ring-blue-500 bg-white col-span-1 lg:col-span-2' : THEMES[theme]}`}>
+            <div key={script.id} className={`rounded-xl border shadow-sm transition-all overflow-hidden flex flex-col ${editingId === script.id ? 'border-blue-500 ring-1 ring-blue-500 bg-white dark:bg-slate-800 col-span-1 lg:col-span-2' : THEMES[theme]}`}>
               {editingId === script.id ? (
                   // EDIT MODE
                   <div className="p-4 sm:p-6 space-y-4 flex-1 flex flex-col h-full">
@@ -256,20 +277,20 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
                               type="text" 
                               value={editForm.name} 
                               onChange={e => setEditForm({...editForm, name: e.target.value})}
-                              className="text-xl font-bold text-slate-900 border-none focus:ring-0 p-0 w-full bg-transparent placeholder-slate-400"
+                              className="text-xl font-bold text-slate-900 dark:text-white border-none focus:ring-0 p-0 w-full bg-transparent placeholder-slate-400"
                               placeholder="Script Name"
                           />
                           <div className="flex items-center space-x-2">
                             <select 
                                 value={editForm.category}
                                 onChange={e => setEditForm({...editForm, category: e.target.value})}
-                                className="text-xs border-slate-300 rounded-md py-1 px-2 bg-white text-slate-900"
+                                className="text-xs border-slate-300 dark:border-slate-600 rounded-md py-1 px-2 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                             >
                                 <option value="Cold Call">Cold Call</option>
                                 <option value="Follow-up">Follow-up</option>
                                 <option value="Gatekeeper">Gatekeeper</option>
                             </select>
-                            <div className="flex space-x-1 border-l pl-2 border-slate-200">
+                            <div className="flex space-x-1 border-l pl-2 border-slate-200 dark:border-slate-700">
                                 {(['slate', 'blue', 'green', 'purple', 'amber'] as const).map(c => (
                                     <button 
                                         key={c}
@@ -282,15 +303,17 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
                       </div>
                       
                       {/* Formatting Toolbar */}
-                      <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50 border border-slate-200 rounded-lg">
-                          <button onClick={() => executeCommand('bold')} className="p-1.5 hover:bg-white rounded text-slate-600" title="Bold"><Bold size={16}/></button>
-                          <button onClick={() => executeCommand('italic')} className="p-1.5 hover:bg-white rounded text-slate-600" title="Italic"><Italic size={16}/></button>
-                          <div className="w-px h-4 bg-slate-300 mx-1"></div>
-                          <button onClick={() => executeCommand('backColor', '#fef3c7')} className="p-1.5 hover:bg-white rounded text-amber-600" title="Highlight Yellow"><Highlighter size={16}/></button>
-                          <button onClick={() => executeCommand('backColor', '#dcfce7')} className="p-1.5 hover:bg-white rounded text-green-600" title="Highlight Green"><Highlighter size={16}/></button>
-                          <button onClick={() => executeCommand('removeFormat')} className="p-1.5 hover:bg-white rounded text-slate-400" title="Clear Formatting"><Eraser size={16}/></button>
-                          
-                          <div className="w-px h-4 bg-slate-300 mx-1"></div>
+                      <div className="flex flex-wrap items-center gap-1 p-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg">
+                          <button onClick={() => executeCommand('bold')} className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-400" title="Bold"><Bold size={16}/></button>
+                          <button onClick={() => executeCommand('italic')} className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-600 dark:text-slate-400" title="Italic"><Italic size={16}/></button>
+                          <div className="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+                          <button onClick={() => executeCommand('backColor', '#fef3c7')} className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-amber-600" title="Highlight Yellow"><Highlighter size={16}/></button>
+                          <button onClick={() => executeCommand('backColor', '#dcfce7')} className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-green-600" title="Highlight Green"><Highlighter size={16}/></button>
+                          <button onClick={() => executeCommand('removeFormat')} className="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded text-slate-400" title="Clear Formatting"><Eraser size={16}/></button>
+                          <div className="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+                          <button onClick={() => setShowFindReplace(!showFindReplace)} className={`p-1.5 rounded ${showFindReplace ? 'bg-blue-100 text-blue-600' : 'text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700'}`} title="Find & Replace"><Search size={16}/></button>
+
+                          <div className="w-px h-4 bg-slate-300 dark:bg-slate-600 mx-1"></div>
                           
                           <div className="flex items-center space-x-1 ml-1 overflow-x-auto no-scrollbar">
                               <span className="text-xs font-bold text-slate-400 uppercase mr-1">Vars:</span>
@@ -298,20 +321,44 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
                                   <button 
                                     key={v} 
                                     onClick={() => insertVariable(v)} 
-                                    className="px-2 py-0.5 bg-white border border-slate-300 rounded hover:bg-blue-50 hover:border-blue-300 text-slate-700 text-xs font-medium shadow-sm transition-colors whitespace-nowrap"
+                                    className="px-2 py-0.5 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded hover:bg-blue-50 hover:border-blue-300 text-slate-700 dark:text-slate-200 text-xs font-medium shadow-sm transition-colors whitespace-nowrap"
                                   >
                                       {v}
                                   </button>
                               ))}
                           </div>
                       </div>
+
+                      {/* Find & Replace Bar */}
+                      {showFindReplace && (
+                        <div className="flex items-center gap-2 p-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg animate-in slide-in-from-top-2">
+                             <Search size={14} className="text-slate-400 ml-1" />
+                             <input 
+                               type="text" 
+                               value={findText} 
+                               onChange={e => setFindText(e.target.value)} 
+                               placeholder="Find..." 
+                               className="border border-slate-300 dark:border-slate-600 rounded px-2 py-1 text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                             />
+                             <ArrowRightIcon className="text-slate-400" />
+                             <input 
+                               type="text" 
+                               value={replaceText} 
+                               onChange={e => setReplaceText(e.target.value)} 
+                               placeholder="Replace..." 
+                               className="border border-slate-300 dark:border-slate-600 rounded px-2 py-1 text-xs bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-blue-500"
+                             />
+                             <button onClick={handleFindReplace} className="px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700">Replace All</button>
+                             <button onClick={() => setShowFindReplace(false)} className="ml-auto text-slate-400 hover:text-slate-600"><X size={14} /></button>
+                        </div>
+                      )}
   
                       {/* Rich Text Editor */}
+                      {/* Uncontrolled to fix cursor issues */}
                       <div 
                         ref={editorRef}
                         contentEditable
-                        className="flex-1 w-full p-4 border border-slate-300 rounded-lg text-sm bg-white text-slate-900 overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px]"
-                        onInput={(e) => setEditForm({...editForm, content: e.currentTarget.innerHTML})}
+                        className="flex-1 w-full p-4 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white overflow-y-auto focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px]"
                         dangerouslySetInnerHTML={{ __html: editForm.content || '' }}
                         style={{ lineHeight: '1.6' }}
                       />
@@ -332,15 +379,15 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
                         <div className="flex space-x-1">
                             <button 
                                 onClick={() => togglePreview(script.id)} 
-                                className={`p-2 rounded transition-colors ${previewMode[script.id] ? 'bg-white/50 text-slate-800 shadow-sm' : 'text-slate-500 hover:bg-white/30'}`}
+                                className={`p-2 rounded transition-colors ${previewMode[script.id] ? 'bg-white/50 text-slate-800 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:bg-white/30'}`}
                                 title={previewMode[script.id] ? "Show Template" : "Simulate Preview"}
                             >
                                 {previewMode[script.id] ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
-                            <button onClick={() => handleEdit(script)} className="p-2 text-slate-500 hover:text-blue-700 rounded hover:bg-white/30">
+                            <button onClick={() => handleEdit(script)} className="p-2 text-slate-500 dark:text-slate-400 hover:text-blue-700 dark:hover:text-blue-300 rounded hover:bg-white/30">
                                 <Edit size={16} />
                             </button>
-                            <button onClick={() => onDeleteScript(script.id)} className="p-2 text-slate-500 hover:text-red-700 rounded hover:bg-white/30">
+                            <button onClick={() => onDeleteScript(script.id)} className="p-2 text-slate-500 dark:text-slate-400 hover:text-red-700 dark:hover:text-red-300 rounded hover:bg-white/30">
                                 <Trash2 size={16} />
                             </button>
                         </div>
@@ -348,7 +395,7 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
                     
                     <div className="p-6 flex-1 flex flex-col relative group">
                          <div 
-                            className="flex-1 text-sm text-slate-700 leading-relaxed font-sans bg-white/50 p-4 rounded-lg border border-white/50 shadow-sm overflow-auto max-h-[300px]"
+                            className="flex-1 text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-sans bg-white/50 dark:bg-slate-900/50 p-4 rounded-lg border border-white/50 dark:border-slate-700/50 shadow-sm overflow-auto max-h-[300px]"
                             dangerouslySetInnerHTML={{ 
                                 __html: previewMode[script.id] ? renderPreview(script.content) : script.content 
                             }}
@@ -356,7 +403,7 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
                          
                          <button 
                             onClick={() => copyToClipboard(script.content, script.id)}
-                            className="absolute top-8 right-8 p-1.5 bg-white border border-slate-200 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:text-blue-600 z-10"
+                            className="absolute top-8 right-8 p-1.5 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:text-blue-600 z-10"
                             title="Copy text"
                         >
                             {copiedId === script.id ? <Check size={14} className="text-green-600"/> : <Copy size={14}/>}
@@ -369,12 +416,12 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
         })}
         
         {scripts.length === 0 && (
-             <div className="col-span-full text-center py-12 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                 <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                     <FileText size={32} className="text-slate-300" />
+             <div className="col-span-full text-center py-12 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl bg-slate-50/50 dark:bg-slate-800/50">
+                 <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                     <FileText size={32} className="text-slate-300 dark:text-slate-500" />
                  </div>
-                 <h3 className="text-lg font-medium text-slate-900">No scripts created yet</h3>
-                 <p className="text-slate-500 mb-6">Create templates to standardize your team's outreach.</p>
+                 <h3 className="text-lg font-medium text-slate-900 dark:text-white">No scripts created yet</h3>
+                 <p className="text-slate-500 dark:text-slate-400 mb-6">Create templates to standardize your team's outreach.</p>
                  <Button onClick={handleCreateNew}>Create First Script</Button>
              </div>
         )}
@@ -382,3 +429,10 @@ export const Scripts: React.FC<ScriptsProps> = ({ scripts, onAddScript, onUpdate
     </div>
   );
 };
+
+const ArrowRightIcon = ({ className }: { className?: string }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <path d="M5 12h14" />
+        <path d="m12 5 7 7-7 7" />
+    </svg>
+);

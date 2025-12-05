@@ -26,13 +26,13 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-6 border-b border-slate-200 bg-slate-50">
-          <h2 className="text-lg font-semibold text-slate-800 flex items-center">
-            <Target className="w-5 h-5 mr-2 text-blue-600" />
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+          <h2 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center">
+            <Target className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
             Start New Research Project
           </h2>
-          <p className="text-slate-500 text-sm mt-1">
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">
             Define your target audience and let LeadScout find the best prospects.
           </p>
         </div>
@@ -40,7 +40,7 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Industry / Keyword
               </label>
               <div className="relative">
@@ -51,13 +51,13 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
                   value={params.industry}
                   onChange={(e) => setParams({ ...params, industry: e.target.value })}
                   placeholder="e.g. Dental Clinic, SaaS, Restaurant"
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Location
               </label>
               <div className="relative">
@@ -68,7 +68,7 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
                   value={params.location}
                   onChange={(e) => setParams({ ...params, location: e.target.value })}
                   placeholder="e.g. Berlin, New York, 90210"
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                 />
               </div>
             </div>
@@ -76,7 +76,7 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Max Results
               </label>
               <div className="relative">
@@ -84,7 +84,7 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
                 <select
                   value={params.limit}
                   onChange={(e) => setParams({ ...params, limit: Number(e.target.value) })}
-                  className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-slate-900"
+                  className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                 >
                   <option value={5}>5 Leads</option>
                   <option value={10}>10 Leads</option>
@@ -99,13 +99,13 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Search Radius
               </label>
               <select
                 value={params.radius}
                 onChange={(e) => setParams({ ...params, radius: Number(e.target.value) })}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-slate-900"
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
               >
                 <option value={5}>5 km</option>
                 <option value={10}>10 km</option>
@@ -115,7 +115,7 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
             </div>
 
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Min. Rating (0-5)
               </label>
               <input
@@ -125,11 +125,11 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
                 step="0.1"
                 value={params.minRating}
                 onChange={(e) => setParams({ ...params, minRating: Number(e.target.value) })}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-slate-900"
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
               />
             </div>
              <div className="space-y-2">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Min. Reviews
               </label>
               <input
@@ -137,7 +137,7 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
                 min="0"
                 value={params.minReviews}
                 onChange={(e) => setParams({ ...params, minReviews: Number(e.target.value) })}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white text-slate-900"
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
               />
             </div>
           </div>
@@ -148,9 +148,9 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
                 type="checkbox"
                 checked={params.mustHaveWebsite}
                 onChange={(e) => setParams({ ...params, mustHaveWebsite: e.target.checked })}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-300"
+                className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-slate-300 dark:border-slate-600"
               />
-              <span className="text-sm text-slate-700">Only fetch businesses with a website</span>
+              <span className="text-sm text-slate-700 dark:text-slate-300">Only fetch businesses with a website</span>
             </label>
 
             <Button type="submit" size="lg" isLoading={isProcessing}>
@@ -161,15 +161,15 @@ export const NewSearch: React.FC<NewSearchProps> = ({ onStartSearch, isProcessin
       </div>
 
       <div className="mt-8">
-        <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-4">Search Tips</h3>
+        <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4">Search Tips</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-            <div className="font-medium text-slate-800 mb-1">Be Specific</div>
-            <p className="text-sm text-slate-500">Instead of "Food", try "Italian Restaurant" or "Organic Bakery" for better results.</p>
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="font-medium text-slate-800 dark:text-white mb-1">Be Specific</div>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Instead of "Food", try "Italian Restaurant" or "Organic Bakery" for better results.</p>
           </div>
-          <div className="bg-white p-4 rounded-lg border border-slate-200 shadow-sm">
-            <div className="font-medium text-slate-800 mb-1">Location Matters</div>
-            <p className="text-sm text-slate-500">Postal codes often yield more precise density than broad city names.</p>
+          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="font-medium text-slate-800 dark:text-white mb-1">Location Matters</div>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Postal codes often yield more precise density than broad city names.</p>
           </div>
         </div>
       </div>

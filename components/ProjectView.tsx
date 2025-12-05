@@ -174,10 +174,10 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
     }
 
     const colors: Record<string, string> = {
-      New: 'bg-blue-100 text-blue-800',
-      Reviewed: 'bg-indigo-100 text-indigo-800',
-      Contacted: 'bg-purple-100 text-purple-800',
-      Invalid: 'bg-slate-100 text-slate-800',
+      New: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+      Reviewed: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100',
+      Contacted: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+      Invalid: 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-300',
     };
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${colors[status] || colors.New} transition-colors duration-500`}>
@@ -189,36 +189,36 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
   const ScoreBadge = ({ score }: { score?: number }) => {
     if (score === undefined) return <span className="text-slate-300 text-xs">-</span>;
     
-    let colorClass = 'bg-slate-100 text-slate-600';
-    if (score >= 80) colorClass = 'bg-green-100 text-green-700 font-bold';
-    else if (score >= 50) colorClass = 'bg-yellow-100 text-yellow-700';
-    else if (score < 50) colorClass = 'bg-red-50 text-red-700';
+    let colorClass = 'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300';
+    if (score >= 80) colorClass = 'bg-green-100 text-green-700 font-bold dark:bg-green-900 dark:text-green-300';
+    else if (score >= 50) colorClass = 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300';
+    else if (score < 50) colorClass = 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300';
 
     return (
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${colorClass} border border-white shadow-sm`}>
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${colorClass} border border-white dark:border-slate-600 shadow-sm`}>
         {score}
       </div>
     );
   };
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg shadow border border-slate-200 overflow-hidden relative">
+    <div className="flex flex-col h-full bg-white dark:bg-slate-800 rounded-lg shadow border border-slate-200 dark:border-slate-700 overflow-hidden relative">
       {/* Save List Modal */}
       {showSaveListModal && (
         <div className="absolute inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in duration-200">
-             <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-               <h3 className="font-bold text-slate-800">Save to Contact List</h3>
-               <button onClick={() => setShowSaveListModal(false)} className="text-slate-400 hover:text-slate-600"><X size={20} /></button>
+          <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-in fade-in zoom-in duration-200 border border-slate-200 dark:border-slate-700">
+             <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+               <h3 className="font-bold text-slate-800 dark:text-white">Save to Contact List</h3>
+               <button onClick={() => setShowSaveListModal(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><X size={20} /></button>
              </div>
              <div className="p-6 space-y-4">
-                <p className="text-sm text-slate-500">Saving {selectedLeadIds.size} leads to a list.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Saving {selectedLeadIds.size} leads to a list.</p>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-slate-700">Select List</label>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Select List</label>
                   <select 
                     value={selectedListId}
                     onChange={(e) => setSelectedListId(e.target.value)}
-                    className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900"
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                   >
                     <option value="new">+ Create New List</option>
                     {contactLists.map(list => (
@@ -228,18 +228,18 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                 </div>
                 {selectedListId === 'new' && (
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-slate-700">List Name</label>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">List Name</label>
                     <input 
                       type="text" 
                       placeholder="e.g. Q1 Outreach"
                       value={newListName}
                       onChange={(e) => setNewListName(e.target.value)}
-                      className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900"
+                      className="w-full border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                     />
                   </div>
                 )}
              </div>
-             <div className="px-6 py-4 bg-slate-50 flex justify-end space-x-3">
+             <div className="px-6 py-4 bg-slate-50 dark:bg-slate-700/50 flex justify-end space-x-3">
                <Button variant="secondary" onClick={() => setShowSaveListModal(false)}>Cancel</Button>
                <Button onClick={handleSaveListSubmit} disabled={selectedListId === 'new' && !newListName.trim()}>Save Leads</Button>
              </div>
@@ -248,23 +248,23 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
       )}
 
       {/* Header */}
-      <div className="p-4 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 bg-slate-50">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0 bg-slate-50 dark:bg-slate-900/50">
         <div>
           <div className="flex items-center space-x-2">
-            <button onClick={onBack} className="text-slate-400 hover:text-slate-600 text-sm">
+            <button onClick={onBack} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm">
               &larr; Projects
             </button>
-            <h2 className="text-xl font-bold text-slate-800">{project.name}</h2>
-            <span className={`px-2 py-0.5 text-xs rounded-full border ${project.status === 'Completed' ? 'border-green-200 bg-green-50 text-green-700' : 'border-blue-200 bg-blue-50 text-blue-700'}`}>
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white">{project.name}</h2>
+            <span className={`px-2 py-0.5 text-xs rounded-full border ${project.status === 'Completed' ? 'border-green-200 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800' : 'border-blue-200 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800'}`}>
               {project.status}
             </span>
           </div>
-          <p className="text-sm text-slate-500 mt-1 pl-6">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 pl-6">
             {project.leads.length} leads found • {project.location} ({project.radius}km)
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <Button variant="secondary" size="sm" onClick={() => setShowCallStats(!showCallStats)} className={showCallStats ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}>
+          <Button variant="secondary" size="sm" onClick={() => setShowCallStats(!showCallStats)} className={showCallStats ? 'bg-blue-50 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800' : ''}>
             <BarChart3 size={16} className="mr-2" />
             {showCallStats ? 'Hide Stats' : 'Call Reporting'}
           </Button>
@@ -279,24 +279,24 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
 
       {/* Call Stats Dashboard */}
       {showCallStats && (
-        <div className="bg-slate-50 border-b border-slate-200 p-4 animate-in slide-in-from-top-4 duration-300">
+        <div className="bg-slate-50 dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 animate-in slide-in-from-top-4 duration-300">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
              {/* Key Metrics */}
-             <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-between">
-                <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">Total Calls</span>
+             <div className="bg-white dark:bg-slate-700 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 flex flex-col justify-between">
+                <span className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Total Calls</span>
                 <div className="flex items-baseline mt-2">
-                  <span className="text-2xl font-bold text-slate-900">{callStats.totalCalls}</span>
+                  <span className="text-2xl font-bold text-slate-900 dark:text-white">{callStats.totalCalls}</span>
                   <span className="ml-2 text-xs text-slate-400">log entries</span>
                 </div>
              </div>
              
-             <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex flex-col justify-between">
-                <span className="text-xs text-slate-500 uppercase font-bold tracking-wider">Unique Leads Called</span>
+             <div className="bg-white dark:bg-slate-700 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600 flex flex-col justify-between">
+                <span className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider">Unique Leads Called</span>
                 <div className="flex items-baseline mt-2">
-                  <span className="text-2xl font-bold text-blue-600">{callStats.leadsCalled}</span>
+                  <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{callStats.leadsCalled}</span>
                   <span className="ml-2 text-xs text-slate-400">of {project.leads.length} leads</span>
                 </div>
-                 <div className="w-full bg-slate-100 rounded-full h-1.5 mt-2">
+                 <div className="w-full bg-slate-100 dark:bg-slate-600 rounded-full h-1.5 mt-2">
                     <div 
                       className="bg-blue-500 h-1.5 rounded-full" 
                       style={{ width: `${project.leads.length > 0 ? (callStats.leadsCalled / project.leads.length) * 100 : 0}%` }}
@@ -305,17 +305,17 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
              </div>
 
              {/* Outcome Breakdown */}
-             <div className="md:col-span-2 bg-white p-4 rounded-lg shadow-sm border border-slate-200">
-                <span className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2 block">Outcome Distribution</span>
+             <div className="md:col-span-2 bg-white dark:bg-slate-700 p-4 rounded-lg shadow-sm border border-slate-200 dark:border-slate-600">
+                <span className="text-xs text-slate-500 dark:text-slate-400 uppercase font-bold tracking-wider mb-2 block">Outcome Distribution</span>
                 <div className="space-y-2">
                    {callStats.outcomeEntries.length === 0 ? (
                       <p className="text-xs text-slate-400 italic">No call data available yet.</p>
                    ) : (
                      callStats.outcomeEntries.slice(0, 3).map(([outcome, count]) => (
                        <div key={outcome} className="flex items-center text-sm">
-                          <span className="w-32 truncate text-slate-600">{outcome}</span>
+                          <span className="w-32 truncate text-slate-600 dark:text-slate-300">{outcome}</span>
                           <div className="flex-1 mx-2">
-                             <div className="w-full bg-slate-100 rounded-full h-2">
+                             <div className="w-full bg-slate-100 dark:bg-slate-600 rounded-full h-2">
                                 <div 
                                   className={`h-2 rounded-full ${
                                     outcome.includes('Appointment') ? 'bg-green-500' : 
@@ -325,7 +325,7 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                                 ></div>
                              </div>
                           </div>
-                          <span className="font-bold text-slate-800">{count}</span>
+                          <span className="font-bold text-slate-800 dark:text-white">{count}</span>
                        </div>
                      ))
                    )}
@@ -336,7 +336,7 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
       )}
 
       {/* Toolbar */}
-      <div className="p-4 border-b border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 bg-white z-20">
+      <div className="p-4 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4 bg-white dark:bg-slate-800 z-20">
         <div className="relative w-full md:w-96">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
           <input 
@@ -344,7 +344,7 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
             placeholder="Search companies..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white text-slate-900"
+            className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
           />
         </div>
         
@@ -353,7 +353,7 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
           <select 
             value={statusFilter} 
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="border border-slate-300 rounded-lg text-sm py-2 px-3 outline-none bg-white text-slate-900"
+            className="border border-slate-300 dark:border-slate-600 rounded-lg text-sm py-2 px-3 outline-none bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
           >
             <option value="All">All Statuses</option>
             <option value="New">New</option>
@@ -366,19 +366,19 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
 
       {/* Bulk Action Bar */}
       {selectedLeadIds.size > 0 && (
-        <div className="bg-blue-50 border-b border-blue-100 p-3 flex items-center justify-between animate-in slide-in-from-top-2 duration-200">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border-b border-blue-100 dark:border-blue-800 p-3 flex items-center justify-between animate-in slide-in-from-top-2 duration-200">
            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium text-blue-800">{selectedLeadIds.size} selected</span>
-              <div className="h-4 w-px bg-blue-200"></div>
+              <span className="text-sm font-medium text-blue-800 dark:text-blue-300">{selectedLeadIds.size} selected</span>
+              <div className="h-4 w-px bg-blue-200 dark:bg-blue-800"></div>
               <button 
                 onClick={() => setSelectedLeadIds(new Set())}
-                className="text-sm text-blue-600 hover:underline"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 Clear selection
               </button>
            </div>
            <div className="flex space-x-3">
-              <Button size="sm" variant="secondary" onClick={() => setShowSaveListModal(true)} className="bg-white border-blue-200 text-blue-700 hover:bg-blue-50">
+              <Button size="sm" variant="secondary" onClick={() => setShowSaveListModal(true)} className="bg-white dark:bg-slate-700 border-blue-200 dark:border-slate-600 text-blue-700 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-slate-600">
                  <FolderPlus size={16} className="mr-2" /> Save to List
               </Button>
               <Button size="sm" onClick={handleBulkEnrichClick}>
@@ -389,14 +389,14 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
       )}
 
       {/* Table */}
-      <div className="flex-1 overflow-auto">
-        <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50 sticky top-0 z-10">
+      <div className="flex-1 overflow-auto bg-white dark:bg-slate-800">
+        <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+          <thead className="bg-slate-50 dark:bg-slate-900/50 sticky top-0 z-10">
             <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-10">
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider w-10">
                  <input 
                   type="checkbox" 
-                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600"
                   onChange={(e) => {
                     if(e.target.checked) setSelectedLeadIds(new Set(filteredLeads.map(l => l.id)));
                     else setSelectedLeadIds(new Set());
@@ -404,35 +404,35 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                   checked={filteredLeads.length > 0 && selectedLeadIds.size === filteredLeads.length}
                 />
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100" onClick={() => handleSort('leadScore')}>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => handleSort('leadScore')}>
                  <div className="flex items-center">
                     Score
                     {sortField === 'leadScore' && (sortDirection === 'asc' ? <ChevronUp size={12} className="ml-1"/> : <ChevronDown size={12} className="ml-1"/>)}
                  </div>
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider cursor-pointer hover:bg-slate-100" onClick={() => handleSort('name')}>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => handleSort('name')}>
                  <div className="flex items-center">
                     Company
                     {sortField === 'name' && (sortDirection === 'asc' ? <ChevronUp size={12} className="ml-1"/> : <ChevronDown size={12} className="ml-1"/>)}
                  </div>
               </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Website</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Phone</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Decision Maker</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Last Call</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Setting Date</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Website</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Phone</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Email</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Decision Maker</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Status</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Last Call</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Setting Date</th>
               <th scope="col" className="relative px-6 py-3"><span className="sr-only">Edit</span></th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-slate-200">
+          <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
             {filteredLeads.map((lead) => (
-              <tr key={lead.id} className={`transition-colors duration-300 ${lead.isEnriching ? 'bg-blue-50/30' : selectedLeadIds.has(lead.id) ? 'bg-blue-50/50' : justContactedIds.has(lead.id) ? 'bg-green-50' : 'hover:bg-slate-50'}`}>
+              <tr key={lead.id} className={`transition-colors duration-300 ${lead.isEnriching ? 'bg-blue-50/30 dark:bg-blue-900/10' : selectedLeadIds.has(lead.id) ? 'bg-blue-50/50 dark:bg-blue-900/20' : justContactedIds.has(lead.id) ? 'bg-green-50 dark:bg-green-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-700/50'}`}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <input 
                     type="checkbox" 
-                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 dark:bg-slate-700 dark:border-slate-600"
                     checked={selectedLeadIds.has(lead.id)}
                     onChange={() => toggleSelection(lead.id)}
                   />
@@ -443,17 +443,17 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                 <td className="px-6 py-4">
                   <div className="flex items-center">
                     <div>
-                      <div className="text-sm font-medium text-slate-900 cursor-pointer hover:text-blue-600" onClick={() => setSelectedLead(lead)}>
+                      <div className="text-sm font-medium text-slate-900 dark:text-white cursor-pointer hover:text-blue-600 dark:hover:text-blue-400" onClick={() => setSelectedLead(lead)}>
                         {lead.name}
                       </div>
-                      <div className="text-sm text-slate-500">{lead.category}</div>
+                      <div className="text-sm text-slate-500 dark:text-slate-400">{lead.category}</div>
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                    {lead.website ? (
-                    <a href={lead.website} target="_blank" rel="noreferrer" className="flex items-center text-sm text-blue-600 hover:underline group">
-                      <Globe size={14} className="mr-1 text-slate-400 group-hover:text-blue-600" />
+                    <a href={lead.website} target="_blank" rel="noreferrer" className="flex items-center text-sm text-blue-600 dark:text-blue-400 hover:underline group">
+                      <Globe size={14} className="mr-1 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
                       {new URL(lead.website).hostname.replace('www.', '')}
                       <ExternalLink size={12} className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                     </a>
@@ -465,10 +465,10 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                   {lead.phone ? (
                     <button 
                       onClick={() => onStartCall(lead)}
-                      className="flex items-center text-sm text-slate-700 hover:text-blue-600 group px-2 py-1 rounded hover:bg-blue-50 transition-colors"
+                      className="flex items-center text-sm text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 group px-2 py-1 rounded hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors"
                       title="Call this number"
                     >
-                      <Phone size={14} className="mr-2 text-slate-400 group-hover:text-blue-600" />
+                      <Phone size={14} className="mr-2 text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400" />
                       {lead.phone}
                     </button>
                   ) : (
@@ -482,11 +482,11 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                         Checking email...
                       </div>
                     ) : (
-                      <div className="flex items-center text-sm text-slate-500">
+                      <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
                          {lead.email ? (
                            <>
-                             <Mail size={14} className="mr-2 text-slate-400" />
-                             <a href={`mailto:${lead.email}`} className="hover:text-blue-600 hover:underline">{lead.email}</a>
+                             <Mail size={14} className="mr-2 text-slate-400 dark:text-slate-500" />
+                             <a href={`mailto:${lead.email}`} className="hover:text-blue-600 dark:hover:text-blue-400 hover:underline">{lead.email}</a>
                              {lead.emailStatus === 'Validated' && (
                               <span title="Validated Email">
                                 <ShieldCheck size={14} className="ml-1 text-green-500" />
@@ -509,9 +509,9 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                       </div>
                     )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
                   {lead.isEnriching ? (
-                    <div className="flex items-center text-blue-600">
+                    <div className="flex items-center text-blue-600 dark:text-blue-400">
                       <Loader2 size={14} className="animate-spin mr-2" />
                       <span className="text-xs font-medium">Finding CEO...</span>
                     </div>
@@ -529,9 +529,9 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                  <td className="px-6 py-4 whitespace-nowrap text-sm">
                    {lead.lastCallResult ? (
                      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                       lead.lastCallResult === 'Appointment Set' ? 'bg-green-100 text-green-800' :
-                       lead.lastCallResult === 'No Answer' ? 'bg-red-50 text-red-700' :
-                       'bg-slate-100 text-slate-700'
+                       lead.lastCallResult === 'Appointment Set' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                       lead.lastCallResult === 'No Answer' ? 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-300' :
+                       'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
                      }`}>
                        {lead.lastCallResult}
                      </span>
@@ -539,18 +539,18 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
                      <span className="text-slate-400 text-xs">-</span>
                    )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 dark:text-white">
                    {lead.appointmentDate ? (
-                     <span className="font-medium text-green-700 flex items-center">
+                     <span className="font-medium text-green-700 dark:text-green-400 flex items-center">
                        <Calendar size={12} className="mr-1"/>
                        {new Date(lead.appointmentDate).toLocaleDateString()}
                      </span>
                    ) : (
-                     <span className="text-slate-300">-</span>
+                     <span className="text-slate-300 dark:text-slate-600">-</span>
                    )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <button onClick={() => setSelectedLead(lead)} className="text-slate-400 hover:text-blue-600">
+                  <button onClick={() => setSelectedLead(lead)} className="text-slate-400 hover:text-blue-600 dark:hover:text-blue-400">
                     <Edit size={18} />
                   </button>
                 </td>
@@ -559,16 +559,16 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
             
             {filteredLeads.length === 0 && (
               <tr>
-                <td colSpan={11} className="px-6 py-12 text-center text-slate-500">
+                <td colSpan={11} className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                    {(project.status === 'Fetching') ? (
                       <div className="flex flex-col items-center justify-center py-10">
                         <div className="relative flex items-center justify-center w-20 h-20 mb-6">
-                           <div className="absolute inset-0 bg-blue-100 rounded-full animate-ping opacity-75"></div>
-                           <div className="relative z-10 bg-white p-4 rounded-full shadow-md border border-blue-100">
-                             <Radar className="w-8 h-8 text-blue-600 animate-spin-slow" />
+                           <div className="absolute inset-0 bg-blue-100 dark:bg-blue-900 rounded-full animate-ping opacity-75"></div>
+                           <div className="relative z-10 bg-white dark:bg-slate-800 p-4 rounded-full shadow-md border border-blue-100 dark:border-blue-900">
+                             <Radar className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-spin-slow" />
                            </div>
                         </div>
-                        <h3 className="text-lg font-semibold text-slate-800 animate-pulse">Lead scouting in progress...</h3>
+                        <h3 className="text-lg font-semibold text-slate-800 dark:text-white animate-pulse">Lead scouting in progress...</h3>
                         <p className="text-slate-500 mt-2 text-sm max-w-xs text-center">AI is scanning maps and public records to find the best businesses for you.</p>
                       </div>
                    ) : (
@@ -582,14 +582,14 @@ export const ProjectView: React.FC<ProjectViewProps> = ({
         
         {/* Load More Button at bottom of table */}
         {filteredLeads.length > 0 && !isLoadingMore && project.status !== 'Fetching' && (
-          <div className="p-4 flex justify-center bg-slate-50 border-t border-slate-200">
+          <div className="p-4 flex justify-center bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
             <Button variant="secondary" onClick={() => onLoadMore(project)} size="sm">
                <Plus size={16} className="mr-2" /> Find More Leads
             </Button>
           </div>
         )}
         {isLoadingMore && (
-           <div className="p-4 flex justify-center bg-slate-50 border-t border-slate-200">
+           <div className="p-4 flex justify-center bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
               <span className="flex items-center text-sm text-slate-500">
                 <Loader2 size={16} className="animate-spin mr-2" /> Searching for more...
               </span>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, PlusCircle, Database, Settings, LogOut, Menu, Users, BarChart2, FileText, Terminal } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Database, Settings, LogOut, Menu, Users, BarChart2, FileText, Terminal, Moon, Sun } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -7,9 +7,11 @@ interface LayoutProps {
   onNavigate: (tab: 'dashboard' | 'search' | 'projects' | 'contacts' | 'controlling' | 'scripts') => void;
   isDevMode?: boolean;
   onToggleDevMode?: () => void;
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate, isDevMode, onToggleDevMode }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate, isDevMode, onToggleDevMode, isDarkMode, onToggleDarkMode }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const NavItem = ({ id, icon: Icon, label }: { id: typeof activeTab, icon: any, label: string }) => (
@@ -30,9 +32,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate,
   );
 
   return (
-    <div className="flex h-screen bg-slate-50 overflow-hidden">
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 overflow-hidden">
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-slate-900 text-white h-full shadow-xl z-20">
+      <aside className="hidden md:flex flex-col w-64 bg-slate-900 text-white h-full shadow-xl z-20 border-r border-slate-800">
         <div className="p-6 border-b border-slate-800 flex items-center space-x-2">
           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
             <Database size={20} className="text-white" />
@@ -61,13 +63,17 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate,
              <span>Dev Mode {isDevMode ? 'ON' : 'OFF'}</span>
           </button>
           
+           <button 
+             onClick={onToggleDarkMode}
+             className={`flex items-center w-full px-4 py-2 mb-2 transition-colors rounded text-slate-500 hover:text-white hover:bg-slate-800`}
+          >
+             {isDarkMode ? <Sun size={18} className="mr-3 text-yellow-400" /> : <Moon size={18} className="mr-3" />}
+             <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
+          </button>
+
           <button className="flex items-center w-full px-4 py-2 text-slate-400 hover:text-white transition-colors">
             <Settings size={18} className="mr-3" />
             <span>Settings</span>
-          </button>
-          <button className="flex items-center w-full px-4 py-2 mt-2 text-slate-400 hover:text-white transition-colors">
-            <LogOut size={18} className="mr-3" />
-            <span>Sign Out</span>
           </button>
         </div>
       </aside>
@@ -94,25 +100,34 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate,
           <NavItem id="contacts" icon={Users} label="CRM" />
           <NavItem id="scripts" icon={FileText} label="Scripts" />
           <NavItem id="controlling" icon={BarChart2} label="Controlling" />
+          <div className="mt-4 border-t border-slate-800 pt-4">
+              <button 
+                 onClick={onToggleDarkMode}
+                 className="flex items-center w-full px-4 py-3 text-slate-400 hover:text-white"
+              >
+                 {isDarkMode ? <Sun size={20} className="mr-3" /> : <Moon size={20} className="mr-3" />}
+                 <span>{isDarkMode ? 'Switch to Light' : 'Switch to Dark'}</span>
+              </button>
+          </div>
         </div>
       )}
 
       {/* Main Content */}
-      <main className="flex-1 h-full overflow-hidden flex flex-col relative md:static mt-14 md:mt-0">
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
-          <h1 className="text-xl font-semibold text-slate-800 capitalize">
+      <main className="flex-1 h-full overflow-hidden flex flex-col relative md:static mt-14 md:mt-0 bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+        <header className="h-16 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between px-6 shrink-0 transition-colors duration-300">
+          <h1 className="text-xl font-semibold text-slate-800 dark:text-white capitalize">
             {activeTab.replace('-', ' ')}
           </h1>
           <div className="flex items-center space-x-4">
              {isDevMode && (
-                <span className="px-2 py-1 bg-slate-800 text-green-400 text-xs font-mono rounded border border-green-900">
+                <span className="px-2 py-1 bg-slate-800 dark:bg-slate-900 text-green-400 text-xs font-mono rounded border border-green-900">
                    DEV MODE ACTIVE
                 </span>
              )}
-             <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">
+             <div className="px-3 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium border border-blue-100 dark:border-blue-800">
                Pro Plan
              </div>
-             <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-bold">
+             <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold">
                JD
              </div>
           </div>

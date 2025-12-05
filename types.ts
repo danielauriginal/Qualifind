@@ -20,6 +20,7 @@ export interface CallAnalysis {
   confidence: 'High' | 'Medium' | 'Low';
   sentiment: 'Positive' | 'Neutral' | 'Negative';
   keyTakeaways?: string[];
+  userNotes?: string; // Raw user notes from the call
 }
 
 export interface CallLog {

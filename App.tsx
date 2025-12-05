@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Layout } from './components/Layout';
 import { Dashboard } from './components/Dashboard';
@@ -28,6 +28,17 @@ const App: React.FC = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false); // Developer Mode State
+  
+  // Dark Mode State with persistence
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+     try {
+        const stored = localStorage.getItem('leadscout-theme');
+        if (stored) return stored === 'dark';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches;
+     } catch (e) {
+        return false;
+     }
+  });
 
   // GLOBAL CALL STATE
   const [activeCallLead, setActiveCallLead] = useState<Lead | null>(null);
@@ -35,6 +46,17 @@ const App: React.FC = () => {
 
   // Load API Key check
   const hasApiKey = !!process.env.API_KEY;
+
+  // Dark Mode Effect
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('leadscout-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('leadscout-theme', 'light');
+    }
+  }, [isDarkMode]);
 
   const updateProjectState = (updatedProject: Project) => {
     setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
@@ -590,31 +612,31 @@ const App: React.FC = () => {
       return (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-slate-800">My Projects</h2>
+              <h2 className="text-2xl font-bold text-slate-800 dark:text-white">My Projects</h2>
               <button 
                 onClick={startDemoMode}
-                className="text-sm text-blue-600 font-medium hover:underline flex items-center"
+                className="text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline flex items-center"
               >
                 <Play size={14} className="mr-1" /> Load Demo Data
               </button>
             </div>
              {projects.length === 0 ? (
-                <div className="text-center py-20 bg-white rounded-lg border border-slate-200">
-                    <p className="text-slate-500 mb-4">You haven't created any projects yet.</p>
-                    <button onClick={() => setActiveTab('search')} className="text-blue-600 font-medium mr-4">Create one now</button>
-                    <span className="text-slate-300">|</span>
-                    <button onClick={startDemoMode} className="text-slate-500 hover:text-blue-600 font-medium ml-4">Load Demo Data</button>
+                <div className="text-center py-20 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <p className="text-slate-500 dark:text-slate-400 mb-4">You haven't created any projects yet.</p>
+                    <button onClick={() => setActiveTab('search')} className="text-blue-600 dark:text-blue-400 font-medium mr-4">Create one now</button>
+                    <span className="text-slate-300 dark:text-slate-600">|</span>
+                    <button onClick={startDemoMode} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 font-medium ml-4">Load Demo Data</button>
                 </div>
              ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {projects.map(p => (
-                        <div key={p.id} onClick={() => setCurrentProject(p)} className="bg-white p-6 rounded-lg border border-slate-200 shadow-sm cursor-pointer hover:border-blue-300 hover:shadow-md transition-all">
+                        <div key={p.id} onClick={() => setCurrentProject(p)} className="bg-white dark:bg-slate-800 p-6 rounded-lg border border-slate-200 dark:border-slate-700 shadow-sm cursor-pointer hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-md transition-all">
                             <div className="flex justify-between items-start mb-4">
-                                <h3 className="font-bold text-slate-800 text-lg truncate">{p.name}</h3>
-                                <span className={`text-xs px-2 py-1 rounded-full ${p.status === 'Completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>{p.status}</span>
+                                <h3 className="font-bold text-slate-800 dark:text-white text-lg truncate">{p.name}</h3>
+                                <span className={`text-xs px-2 py-1 rounded-full ${p.status === 'Completed' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100'}`}>{p.status}</span>
                             </div>
-                            <div className="space-y-2 text-sm text-slate-500">
-                                <p>Leads: <span className="text-slate-900 font-medium">{p.leads.length}</span></p>
+                            <div className="space-y-2 text-sm text-slate-500 dark:text-slate-400">
+                                <p>Leads: <span className="text-slate-900 dark:text-white font-medium">{p.leads.length}</span></p>
                                 <p>Industry: {p.industry}</p>
                                 <p>Location: {p.location}</p>
                                 <p>Date: {new Date(p.createdAt).toLocaleDateString()}</p>
@@ -664,20 +686,20 @@ const App: React.FC = () => {
 
   if (!hasApiKey && !isDemoMode) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-        <div className="bg-white p-8 rounded-xl shadow-lg max-w-md w-full text-center">
-           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
              <span className="text-2xl">⚠️</span>
            </div>
-           <h1 className="text-xl font-bold text-slate-900 mb-2">Missing API Key</h1>
-           <p className="text-slate-600 mb-6">
+           <h1 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Missing API Key</h1>
+           <p className="text-slate-600 dark:text-slate-300 mb-6">
              To use LeadScout AI's live features, you must provide a valid Gemini API Key.
            </p>
-           <div className="bg-slate-100 p-4 rounded text-sm text-left text-slate-700 mb-6">
+           <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded text-sm text-left text-slate-700 dark:text-slate-200 mb-6">
              <p className="font-semibold mb-1">How to fix:</p>
              <ol className="list-decimal pl-4 space-y-1">
-               <li>Get a key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-blue-600 underline">Google AI Studio</a>.</li>
-               <li>Set it as the <code className="bg-slate-200 px-1 rounded">API_KEY</code> environment variable.</li>
+               <li>Get a key from <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer" className="text-blue-600 dark:text-blue-400 underline">Google AI Studio</a>.</li>
+               <li>Set it as the <code className="bg-slate-200 dark:bg-slate-600 px-1 rounded">API_KEY</code> environment variable.</li>
              </ol>
            </div>
            <div className="space-y-3">
@@ -685,12 +707,12 @@ const App: React.FC = () => {
                I've added the key, reload
              </button>
              <div className="relative flex items-center py-2">
-                <div className="flex-grow border-t border-slate-200"></div>
+                <div className="flex-grow border-t border-slate-200 dark:border-slate-600"></div>
                 <span className="flex-shrink-0 mx-4 text-slate-400 text-xs uppercase">or</span>
-                <div className="flex-grow border-t border-slate-200"></div>
+                <div className="flex-grow border-t border-slate-200 dark:border-slate-600"></div>
              </div>
-             <button onClick={startDemoMode} className="w-full bg-white border border-slate-300 text-slate-700 py-2 rounded-lg hover:bg-slate-50 font-medium transition-colors flex items-center justify-center">
-               <Play size={16} className="mr-2 text-blue-600" /> Try Demo Mode
+             <button onClick={startDemoMode} className="w-full bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-white py-2 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 font-medium transition-colors flex items-center justify-center">
+               <Play size={16} className="mr-2 text-blue-600 dark:text-blue-400" /> Try Demo Mode
              </button>
            </div>
         </div>
@@ -704,6 +726,8 @@ const App: React.FC = () => {
       onNavigate={setActiveTab}
       isDevMode={isDevMode}
       onToggleDevMode={() => setIsDevMode(!isDevMode)}
+      isDarkMode={isDarkMode}
+      onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
     >
       {renderContent()}
       
