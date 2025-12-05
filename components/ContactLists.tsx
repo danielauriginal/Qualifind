@@ -11,9 +11,11 @@ interface ContactListsProps {
   onDeleteList: (id: string) => void;
   onRemoveLeadFromList: (listId: string, leadId: string) => void;
   onAddContact: (listId: string, contact: Lead) => void;
+  onUpdateContact?: (listId: string, contact: Lead) => void; // New prop to persist updates
   onStartCall: (lead: Lead, listId: string) => void;
-  onEnrich?: (lead: Lead, listId: string) => void; // New Prop for Enrichment
-  onFindSimilar?: (lead: Lead) => void; // New Prop for Discovery
+  onEnrich?: (lead: Lead, listId: string) => void; 
+  onFindSimilar?: (lead: Lead) => void; 
+  isDevMode?: boolean;
 }
 
 const STAGE_COLORS: Record<PipelineStage, string> = {
@@ -39,7 +41,18 @@ const ScoreBadge = ({ score }: { score?: number }) => {
     );
 };
 
-export const ContactLists: React.FC<ContactListsProps> = ({ lists, onCreateList, onDeleteList, onRemoveLeadFromList, onAddContact, onStartCall, onEnrich, onFindSimilar }) => {
+export const ContactLists: React.FC<ContactListsProps> = ({ 
+  lists, 
+  onCreateList, 
+  onDeleteList, 
+  onRemoveLeadFromList, 
+  onAddContact, 
+  onUpdateContact,
+  onStartCall, 
+  onEnrich, 
+  onFindSimilar,
+  isDevMode 
+}) => {
   const [activeListId, setActiveListId] = useState<string | null>(null);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   
@@ -97,8 +110,16 @@ export const ContactLists: React.FC<ContactListsProps> = ({ lists, onCreateList,
   };
   
   const handleLeadUpdate = (updatedLead: Lead) => {
-      // Logic handled via parent (App.tsx) usually, but we need to close the panel locally
-      setSelectedLead(null);
+      // 1. Update local selected lead to reflect changes immediately in the panel
+      setSelectedLead(updatedLead);
+      
+      // 2. Persist to parent state
+      if (activeListId && onUpdateContact) {
+          onUpdateContact(activeListId, updatedLead);
+      }
+      
+      // CRITICAL FIX: Do NOT close the panel here. 
+      // The previous code had setSelectedLead(null), which caused the "window closing" bug.
   };
 
   // Render Pipeline View
@@ -205,7 +226,7 @@ export const ContactLists: React.FC<ContactListsProps> = ({ lists, onCreateList,
             </div>
           ) : (
             <table className="min-w-full divide-y divide-slate-200">
-              <thead className="bg-slate-50 sticky top-0">
+              <thead className="bg-slate-50 sticky top-0 z-10">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Score</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
@@ -302,6 +323,7 @@ export const ContactLists: React.FC<ContactListsProps> = ({ lists, onCreateList,
             onClose={() => setSelectedLead(null)} 
             onUpdate={handleLeadUpdate} 
             onStartCall={(lead) => onStartCall(lead, activeList.id)}
+            isDevMode={isDevMode}
         />
       </div>
     );

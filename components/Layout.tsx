@@ -1,13 +1,15 @@
 import React from 'react';
-import { LayoutDashboard, PlusCircle, Database, Settings, LogOut, Menu, Users, BarChart2, FileText } from 'lucide-react';
+import { LayoutDashboard, PlusCircle, Database, Settings, LogOut, Menu, Users, BarChart2, FileText, Terminal } from 'lucide-react';
 
 interface LayoutProps {
   children: React.ReactNode;
   activeTab: 'dashboard' | 'search' | 'projects' | 'contacts' | 'controlling' | 'scripts';
   onNavigate: (tab: 'dashboard' | 'search' | 'projects' | 'contacts' | 'controlling' | 'scripts') => void;
+  isDevMode?: boolean;
+  onToggleDevMode?: () => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate }) => {
+export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate, isDevMode, onToggleDevMode }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const NavItem = ({ id, icon: Icon, label }: { id: typeof activeTab, icon: any, label: string }) => (
@@ -51,6 +53,14 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate 
         </nav>
 
         <div className="p-4 border-t border-slate-800">
+          <button 
+             onClick={onToggleDevMode}
+             className={`flex items-center w-full px-4 py-2 mb-2 transition-colors rounded ${isDevMode ? 'text-green-400 bg-slate-800' : 'text-slate-500 hover:text-white'}`}
+          >
+             <Terminal size={18} className="mr-3" />
+             <span>Dev Mode {isDevMode ? 'ON' : 'OFF'}</span>
+          </button>
+          
           <button className="flex items-center w-full px-4 py-2 text-slate-400 hover:text-white transition-colors">
             <Settings size={18} className="mr-3" />
             <span>Settings</span>
@@ -94,6 +104,11 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate 
             {activeTab.replace('-', ' ')}
           </h1>
           <div className="flex items-center space-x-4">
+             {isDevMode && (
+                <span className="px-2 py-1 bg-slate-800 text-green-400 text-xs font-mono rounded border border-green-900">
+                   DEV MODE ACTIVE
+                </span>
+             )}
              <div className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">
                Pro Plan
              </div>

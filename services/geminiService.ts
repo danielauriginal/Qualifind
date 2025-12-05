@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { Lead, CallAnalysis } from "../types";
+import { Lead, CallAnalysis, CommercialRegisterData } from "../types";
 
 const getClient = () => {
   const apiKey = process.env.API_KEY;
@@ -236,6 +236,79 @@ export const enrichLeadData = async (lead: Partial<Lead>): Promise<Partial<Lead>
   } catch (error) {
     console.warn(`Failed to enrich lead ${lead.name}`, error);
     return lead;
+  }
+};
+
+/**
+ * "Handelsregister" Module
+ * Specifically targets commercial register data using Gemini Search Grounding.
+ */
+export const fetchHandelsregisterData = async (lead: Lead): Promise<CommercialRegisterData> => {
+  const ai = getClient();
+  const modelId = "gemini-3-pro-preview";
+
+  const prompt = `
+    You are a Legal Data Analyst.
+    
+    TASK: 
+    Find the official Commercial Register (Handelsregister) information for:
+    Company: "${lead.name}"
+    Location: "${lead.address}"
+    
+    INSTRUCTIONS:
+    Search explicitly for sources like North Data, CompanyHouse, Handelsregister.de, or Creditreform.
+    
+    EXTRACT THE FOLLOWING:
+    1. Register ID (e.g. HRB 12345, HRA 9876)
+    2. Register Court (e.g. Amtsgericht Berlin-Charlottenburg)
+    3. Founding Date / Date of Incorporation (ISO format if possible, or text)
+    4. Legal Form (e.g. GmbH, UG, AG, Ltd)
+    5. Share Capital (Stammkapital)
+    6. Managing Directors (Geschäftsführer/Board) - List names of actual owners/founders.
+    7. Latest Revenue / Annual Income / Balance Sheet Total (if publicly available text).
+
+    OUTPUT FORMAT:
+    Return ONLY a raw JSON object with keys:
+    - registerId (string | null)
+    - court (string | null)
+    - foundingDate (string | null)
+    - legalForm (string | null)
+    - shareCapital (string | null)
+    - managingDirectors (array of strings)
+    - latestRevenue (string | null)
+
+    Do not use markdown.
+  `;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelId,
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+      }
+    });
+
+    console.log("Gemini Response:", response); // For debugging
+    const data = cleanAndParseJSON(response.text || "{}");
+    
+    if (!data) throw new Error("Could not parse JSON from response");
+
+    return {
+      registerId: data.registerId || undefined,
+      court: data.court || undefined,
+      foundingDate: data.foundingDate || undefined,
+      legalForm: data.legalForm || undefined,
+      shareCapital: data.shareCapital || undefined,
+      managingDirectors: Array.isArray(data.managingDirectors) ? data.managingDirectors : [],
+      latestRevenue: data.latestRevenue || undefined,
+      lastUpdated: new Date().toISOString()
+    };
+
+  } catch (error) {
+    console.error("Failed to fetch commercial register data", error);
+    // Return partial object to avoid complete failure in UI
+    return { lastUpdated: new Date().toISOString() };
   }
 };
 

@@ -27,6 +27,7 @@ const App: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
+  const [isDevMode, setIsDevMode] = useState(false); // Developer Mode State
 
   // GLOBAL CALL STATE
   const [activeCallLead, setActiveCallLead] = useState<Lead | null>(null);
@@ -456,6 +457,19 @@ const App: React.FC = () => {
     }));
   };
 
+  // Persist changes from detail panel (like Handelsregister updates) to the CRM
+  const handleUpdateContact = (listId: string, updatedContact: Lead) => {
+    setContactLists(prev => prev.map(list => {
+        if (list.id === listId) {
+            return { 
+              ...list, 
+              leads: list.leads.map(l => l.id === updatedContact.id ? updatedContact : l) 
+            };
+        }
+        return list;
+    }));
+  };
+
   const handleDeleteList = (id: string) => {
     setContactLists(prev => prev.filter(l => l.id !== id));
   };
@@ -527,9 +541,6 @@ const App: React.FC = () => {
   };
 
   const handleFindSimilar = (lead: Lead) => {
-      // Navigate to Search tab and pre-fill logic (simulated by prompt, or ideally pass params to NewSearch)
-      // Since NewSearch manages its own state, we'll force a simple alert flow or navigate the user to create a search manually 
-      // with instructions. For a better UX, we'd lift NewSearch state up, but keeping it simple for now:
       alert(`Tip: To find companies similar to "${lead.name}", create a New Search for industry "${lead.category}" in the same location.`);
       setActiveTab('search');
   };
@@ -624,9 +635,11 @@ const App: React.FC = () => {
           onDeleteList={handleDeleteList}
           onRemoveLeadFromList={handleRemoveLeadFromList}
           onAddContact={handleAddContact}
+          onUpdateContact={handleUpdateContact}
           onStartCall={(lead, listId) => handleStartCall(lead, { type: 'list', parentId: listId })}
           onEnrich={handleEnrichListLead}
           onFindSimilar={handleFindSimilar}
+          isDevMode={isDevMode}
         />
       );
     }
@@ -686,7 +699,12 @@ const App: React.FC = () => {
   }
 
   return (
-    <Layout activeTab={activeTab} onNavigate={setActiveTab}>
+    <Layout 
+      activeTab={activeTab} 
+      onNavigate={setActiveTab}
+      isDevMode={isDevMode}
+      onToggleDevMode={() => setIsDevMode(!isDevMode)}
+    >
       {renderContent()}
       
       {/* GLOBAL CALL WIZARD MODAL */}

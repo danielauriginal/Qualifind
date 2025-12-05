@@ -1,6 +1,18 @@
+
 export type LeadStatus = 'New' | 'Reviewed' | 'Contacted' | 'Invalid';
 export type DataConfidence = 'High' | 'Medium' | 'Low';
 export type EmailStatus = 'Validated' | 'Guessed' | 'Tested';
+
+export interface CommercialRegisterData {
+  registerId?: string; // e.g. HRB 12345
+  court?: string; // e.g. Amtsgericht Berlin-Charlottenburg
+  foundingDate?: string; // ISO or text string
+  legalForm?: string; // e.g. GmbH, UG
+  shareCapital?: string; // e.g. 25.000 EUR
+  latestRevenue?: string; // Annual income/Revenue/Balance sheet total
+  managingDirectors?: string[]; // Actual owners/founders found in register
+  lastUpdated?: string;
+}
 
 export interface CallAnalysis {
   callScore: number; // 0-100
@@ -43,6 +55,9 @@ export interface Lead {
   callLogs?: CallLog[];
   lastCallResult?: string;
   appointmentDate?: string; // The date of the upcoming appointment
+  
+  // Handelsregister Data
+  commercialData?: CommercialRegisterData;
 }
 
 export interface Project {
