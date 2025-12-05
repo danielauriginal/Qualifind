@@ -1,0 +1,7 @@
+{
+  "name": "LeadScout AI",
+  "description": "An intelligent B2B lead research tool that automates business discovery via Google Maps and enriches data using public web sources.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
