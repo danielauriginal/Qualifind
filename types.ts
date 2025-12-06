@@ -106,3 +106,12 @@ export interface Script {
   isDefault?: boolean;
   themeColor?: 'blue' | 'green' | 'purple' | 'amber' | 'slate';
 }
+
+export interface PhoneNumber {
+  id: string;
+  number: string;
+  type: 'Virtual' | 'External' | 'Ported';
+  countryCode: string;
+  label?: string;
+  status: 'Verified' | 'Pending' | 'Active';
+}

@@ -7,10 +7,11 @@ import { ProjectView } from './components/ProjectView';
 import { ContactLists } from './components/ContactLists';
 import { Controlling } from './components/Controlling';
 import { Scripts } from './components/Scripts';
-import { Project, SearchParams, Lead, ContactList, Script, PipelineStage, CallLog } from './types';
+import { Project, SearchParams, Lead, ContactList, Script, PipelineStage, CallLog, PhoneNumber } from './types';
 import { searchBusinesses, enrichLeadData } from './services/geminiService';
 import { Play } from 'lucide-react';
 import { CallWizard } from './components/CallWizard';
+import { SettingsModal } from './components/SettingsModal';
 
 // Context to know where the lead came from for updating purposes
 type CallContext = {
@@ -28,6 +29,13 @@ const App: React.FC = () => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false); // Developer Mode State
+  
+  // Settings & Phone State
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumber[]>([
+     // Default example number
+     { id: '1', number: '+49 30 123456', type: 'Virtual', countryCode: 'Germany (+49)', status: 'Verified' }
+  ]);
   
   // Dark Mode State with persistence
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -572,6 +580,10 @@ const App: React.FC = () => {
   const handleUpdateScript = (script: Script) => setScripts(prev => prev.map(s => s.id === script.id ? script : s));
   const handleDeleteScript = (id: string) => setScripts(prev => prev.filter(s => s.id !== id));
 
+  // Phone Number Handlers
+  const handleAddPhoneNumber = (phone: PhoneNumber) => setPhoneNumbers(prev => [...prev, phone]);
+  const handleRemovePhoneNumber = (id: string) => setPhoneNumbers(prev => prev.filter(p => p.id !== id));
+
   const renderContent = () => {
     if (activeTab === 'dashboard') {
       return (
@@ -728,6 +740,7 @@ const App: React.FC = () => {
       onToggleDevMode={() => setIsDevMode(!isDevMode)}
       isDarkMode={isDarkMode}
       onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
+      onOpenSettings={() => setIsSettingsOpen(true)}
     >
       {renderContent()}
       
@@ -743,6 +756,15 @@ const App: React.FC = () => {
             onLogCall={handleLogCall}
           />
       )}
+
+      {/* SETTINGS MODAL */}
+      <SettingsModal 
+         isOpen={isSettingsOpen}
+         onClose={() => setIsSettingsOpen(false)}
+         phoneNumbers={phoneNumbers}
+         onAddNumber={handleAddPhoneNumber}
+         onRemoveNumber={handleRemovePhoneNumber}
+      />
     </Layout>
   );
 };

@@ -9,9 +9,19 @@ interface LayoutProps {
   onToggleDevMode?: () => void;
   isDarkMode?: boolean;
   onToggleDarkMode?: () => void;
+  onOpenSettings?: () => void;
 }
 
-export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate, isDevMode, onToggleDevMode, isDarkMode, onToggleDarkMode }) => {
+export const Layout: React.FC<LayoutProps> = ({ 
+  children, 
+  activeTab, 
+  onNavigate, 
+  isDevMode, 
+  onToggleDevMode, 
+  isDarkMode, 
+  onToggleDarkMode,
+  onOpenSettings 
+}) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   const NavItem = ({ id, icon: Icon, label }: { id: typeof activeTab, icon: any, label: string }) => (
@@ -39,7 +49,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate,
           <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
             <Database size={20} className="text-white" />
           </div>
-          <span className="text-xl font-bold tracking-tight">LeadScout AI</span>
+          <span className="text-xl font-bold tracking-tight">Icebreaker</span>
         </div>
         
         <nav className="flex-1 px-4 py-6">
@@ -71,7 +81,10 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate,
              <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
 
-          <button className="flex items-center w-full px-4 py-2 text-slate-400 hover:text-white transition-colors">
+          <button 
+            onClick={onOpenSettings}
+            className="flex items-center w-full px-4 py-2 text-slate-400 hover:text-white transition-colors"
+          >
             <Settings size={18} className="mr-3" />
             <span>Settings</span>
           </button>
@@ -107,6 +120,13 @@ export const Layout: React.FC<LayoutProps> = ({ children, activeTab, onNavigate,
               >
                  {isDarkMode ? <Sun size={20} className="mr-3" /> : <Moon size={20} className="mr-3" />}
                  <span>{isDarkMode ? 'Switch to Light' : 'Switch to Dark'}</span>
+              </button>
+              <button 
+                 onClick={() => { onOpenSettings && onOpenSettings(); setIsMobileMenuOpen(false); }}
+                 className="flex items-center w-full px-4 py-3 text-slate-400 hover:text-white"
+              >
+                 <Settings size={20} className="mr-3" />
+                 <span>Settings</span>
               </button>
           </div>
         </div>
