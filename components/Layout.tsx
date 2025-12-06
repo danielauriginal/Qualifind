@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { LayoutDashboard, PlusCircle, Database, Settings, LogOut, Menu, Users, BarChart2, FileText, Terminal, Moon, Sun } from 'lucide-react';
 
@@ -10,6 +11,7 @@ interface LayoutProps {
   isDarkMode?: boolean;
   onToggleDarkMode?: () => void;
   onOpenSettings?: () => void;
+  onLogout?: () => void;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ 
@@ -20,7 +22,8 @@ export const Layout: React.FC<LayoutProps> = ({
   onToggleDevMode, 
   isDarkMode, 
   onToggleDarkMode,
-  onOpenSettings 
+  onOpenSettings,
+  onLogout
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
@@ -64,7 +67,7 @@ export const Layout: React.FC<LayoutProps> = ({
           </div>
         </nav>
 
-        <div className="p-4 border-t border-slate-800">
+        <div className="p-4 border-t border-slate-800 space-y-1">
           <button 
              onClick={onToggleDevMode}
              className={`flex items-center w-full px-4 py-2 mb-2 transition-colors rounded ${isDevMode ? 'text-green-400 bg-slate-800' : 'text-slate-500 hover:text-white'}`}
@@ -88,6 +91,16 @@ export const Layout: React.FC<LayoutProps> = ({
             <Settings size={18} className="mr-3" />
             <span>Settings</span>
           </button>
+
+          {onLogout && (
+            <button 
+              onClick={onLogout}
+              className="flex items-center w-full px-4 py-2 text-red-400 hover:text-red-300 hover:bg-slate-800 transition-colors rounded mt-2"
+            >
+              <LogOut size={18} className="mr-3" />
+              <span>Sign Out</span>
+            </button>
+          )}
         </div>
       </aside>
 
@@ -128,6 +141,15 @@ export const Layout: React.FC<LayoutProps> = ({
                  <Settings size={20} className="mr-3" />
                  <span>Settings</span>
               </button>
+              {onLogout && (
+                 <button 
+                    onClick={() => { onLogout(); setIsMobileMenuOpen(false); }}
+                    className="flex items-center w-full px-4 py-3 text-red-400 hover:text-red-300"
+                 >
+                    <LogOut size={20} className="mr-3" />
+                    <span>Sign Out</span>
+                 </button>
+              )}
           </div>
         </div>
       )}
@@ -148,7 +170,7 @@ export const Layout: React.FC<LayoutProps> = ({
                Pro Plan
              </div>
              <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 font-bold">
-               JD
+               A
              </div>
           </div>
         </header>

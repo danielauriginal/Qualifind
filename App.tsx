@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Layout } from './components/Layout';
@@ -12,6 +13,7 @@ import { searchBusinesses, enrichLeadData } from './services/geminiService';
 import { Play } from 'lucide-react';
 import { CallWizard } from './components/CallWizard';
 import { SettingsModal } from './components/SettingsModal';
+import { AuthPage } from './components/AuthPage';
 
 // Context to know where the lead came from for updating purposes
 type CallContext = {
@@ -20,6 +22,11 @@ type CallContext = {
 };
 
 const App: React.FC = () => {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('leadscout-auth') === 'true';
+  });
+
   const [activeTab, setActiveTab] = useState<'dashboard' | 'search' | 'projects' | 'contacts' | 'controlling' | 'scripts'>('dashboard');
   const [projects, setProjects] = useState<Project[]>([]);
   const [contactLists, setContactLists] = useState<ContactList[]>([]);
@@ -65,6 +72,17 @@ const App: React.FC = () => {
       localStorage.setItem('leadscout-theme', 'light');
     }
   }, [isDarkMode]);
+
+  const handleLogin = () => {
+    setIsAuthenticated(true);
+    localStorage.setItem('leadscout-auth', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem('leadscout-auth');
+    setActiveTab('dashboard'); // Reset tab on logout
+  };
 
   const updateProjectState = (updatedProject: Project) => {
     setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
@@ -696,10 +714,28 @@ const App: React.FC = () => {
     return null;
   };
 
+  // ----------------------------------------------------------------------
+  // RENDER: Auth Page vs Main App
+  // ----------------------------------------------------------------------
+
+  if (!isAuthenticated) {
+    return <AuthPage onLogin={handleLogin} />;
+  }
+
+  // ----------------------------------------------------------------------
+
   if (!hasApiKey && !isDemoMode) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900 p-4">
-        <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg max-w-md w-full text-center">
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-xl shadow-lg max-w-md w-full text-center relative">
+           {/* Add Logout to Missing Key screen in case user gets stuck */}
+           <button 
+             onClick={handleLogout} 
+             className="absolute top-4 right-4 text-xs text-slate-400 hover:text-slate-600 underline"
+           >
+             Sign Out
+           </button>
+
            <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
              <span className="text-2xl">⚠️</span>
            </div>
@@ -741,6 +777,7 @@ const App: React.FC = () => {
       isDarkMode={isDarkMode}
       onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       onOpenSettings={() => setIsSettingsOpen(true)}
+      onLogout={handleLogout}
     >
       {renderContent()}
       
